@@ -1,4 +1,5 @@
 
+using System.Reflection.Metadata;
 using MongoDataAccess.Models;
 using MongoDB.Driver;
 
@@ -47,4 +48,16 @@ public class ChoreDataAccess
     await usersCollection.DeleteManyAsync(_ => true);
 }
 
+public async Task DeleteAllChores() {
+    var choresCollection = ConnectToMongo<ChoreModel>(ChoreCollection);
+    await choresCollection.DeleteManyAsync(_ => true);
 }
+public Task CreateMultipleChores(IEnumerable<ChoreModel> chores) {
+    var choresCollection = ConnectToMongo<ChoreModel>(ChoreCollection);
+    return choresCollection.InsertManyAsync(chores);
+}
+
+}
+
+
+
