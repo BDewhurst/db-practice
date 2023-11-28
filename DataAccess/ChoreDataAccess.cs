@@ -1,7 +1,7 @@
-using Amazon.Runtime.Internal;
+
 using MongoDataAccess.Models;
 using MongoDB.Driver;
-using ZstdSharp.Unsafe;
+
 
 namespace MongoDataAccess.DataAccess;
 public class ChoreDataAccess
@@ -18,7 +18,7 @@ public class ChoreDataAccess
         var db = client.GetDatabase(DatabaseName);
         return db.GetCollection<T>(collection);
     }
-    private async Task<List<UserModel>>GetAllUsers() 
+    public async Task<List<UserModel>>GetAllUsers() 
     {
         var usersCollection = ConnectToMongo<UserModel>(UserCollection);
         var results = await usersCollection.FindAsync(_ => true);
@@ -36,4 +36,15 @@ public class ChoreDataAccess
         var results = await choresCollection.FindAsync(c => c.AssignedTo.Id == user.Id);
         return results.ToList();
     }
+
+    public Task CreateMultipleUsers(IEnumerable<UserModel> users) {
+        var usersCollection = ConnectToMongo<UserModel>(UserCollection);
+        return usersCollection.InsertManyAsync(users);
+    }
+    public async Task DeleteAllUsers()
+{
+    var usersCollection = ConnectToMongo<UserModel>(UserCollection);
+    await usersCollection.DeleteManyAsync(_ => true);
+}
+
 }

@@ -1,20 +1,13 @@
-﻿using DnsClient.Protocol;
-using MongoDB.Driver;
-using MongoDB.Driver.Core.Connections;
-using MongoDBDemo;
+﻿using MongoDataAccess.Models;
+using MongoDataAccess.DataAccess;
 
-string connectionString = "";
-string databaseName = "simple_db";
-string collectionsName = "people";
+ChoreDataAccess db = new ChoreDataAccess();
 
-var client = new MongoClient(connectionString);
-var db = client.GetDatabase(databaseName);
-var collection = db.GetCollection<PersonModel>(collectionsName);
 
-var person = new PersonModel {FirstName ="Tim", LastName = "Corey"};
-await collection.InsertOneAsync(person);
-var results = await collection.FindAsync(_ => true);
-foreach ( var result in results.ToList()) {
-Console.WriteLine($"{result.Id} : {result.FirstName} {result.LastName}");
-}
+UserData userData = new UserData();
+List<UserModel> userList = userData.UserList;
+
+await db.DeleteAllUsers();
+await db.CreateMultipleUsers(userList);
+var users = await db.GetAllUsers();
 
