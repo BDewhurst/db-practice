@@ -7,12 +7,20 @@ using MongoDB.Driver;
 namespace MongoDataAccess.DataAccess;
 public class ChoreDataAccess
 {
-    private const string ConnectionString = "";
+    private readonly string ConnectionString = GetConnectionString();
     private const string DatabaseName = "choredb"; 
     private const string ChoreCollection = "chore_chart";
 
     private const string UserCollection = "users";
     private const string ChoreHistoryCollection = "chore_history";
+
+            private static string GetConnectionString()
+        {
+            string envConnectionString = Environment.GetEnvironmentVariable("MONGODB_CONNECTION_STRING");
+            
+          
+            return string.IsNullOrEmpty(envConnectionString) ? "mongodb://localhost:27017" : envConnectionString;
+        }
 
     private IMongoCollection<T> ConnectToMongo<T>(in string collection) {
         var client = new MongoClient(ConnectionString);
@@ -55,6 +63,14 @@ public async Task DeleteAllChores() {
 public Task CreateMultipleChores(IEnumerable<ChoreModel> chores) {
     var choresCollection = ConnectToMongo<ChoreModel>(ChoreCollection);
     return choresCollection.InsertManyAsync(chores);
+}
+
+public async Task CompleteChore(ChoreModel chore) {
+    var choresCollection = ConnectToMongo<ChoreModel>(ChoreCollection);
+    var filter = Builders<ChoreModel>.Filter.Eq("Id", chore.Id);
+    await choresCollection.ReplaceOneAsync(filter, chore);
+    var choreHistoryCollection = ConnectToMongo<ChoreHistoryModel>(ChoreHistoryCollection);
+    await choreHistoryCollection.InsertOneAsync(new ChoreHistoryModel(chore));
 }
 
 }
