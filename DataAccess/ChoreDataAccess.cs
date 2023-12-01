@@ -65,6 +65,16 @@ public Task CreateMultipleChores(IEnumerable<ChoreModel> chores) {
     return choresCollection.InsertManyAsync(chores);
 }
 
+public Task CreateMultipleChoresHistory(IEnumerable<ChoreHistoryModel> chores) {
+    var choresHistoryCollection = ConnectToMongo<ChoreHistoryModel>(ChoreHistoryCollection);
+    return choresHistoryCollection.InsertManyAsync(chores);
+}
+
+public async Task DeleteAllChoresHistory() {
+    var choresHistoryCollection = ConnectToMongo<ChoreHistoryModel>(ChoreHistoryCollection);
+    await choresHistoryCollection.DeleteManyAsync(_ => true);
+}
+
 public async Task CompleteChore(ChoreModel chore) {
     var choresCollection = ConnectToMongo<ChoreModel>(ChoreCollection);
     var filter = Builders<ChoreModel>.Filter.Eq("Id", chore.Id);

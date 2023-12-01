@@ -25,4 +25,13 @@ foreach (var chore in choreList)
 
 await db.DeleteAllChores();
 await db.CreateMultipleChores(choreList);
+  List<ChoreHistoryModel> choreHistoryList = new List<ChoreHistoryModel>();
+ 
+ foreach (ChoreModel chore in choreList)
+            {
+                ChoreHistoryModel history = new ChoreHistoryModel(chore);
+                choreHistoryList.Add(history);
+            }
 
+await db.DeleteAllChoresHistory();
+await db.CreateMultipleChoresHistory(choreHistoryList);
